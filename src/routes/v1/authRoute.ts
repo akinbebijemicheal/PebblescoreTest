@@ -38,9 +38,12 @@ export default authRouter;
  *             required:
  *               - name
  *               - email
+ *               - username
  *               - password
  *             properties:
  *               name:
+ *                 type: string
+ *               username:
  *                 type: string
  *               email:
  *                 type: string
@@ -53,6 +56,7 @@ export default authRouter;
  *                 description: At least one number and one letter
  *             example:
  *               name:  name
+ *               username: username
  *               email: name@example.com
  *               password: password1
  *     responses:

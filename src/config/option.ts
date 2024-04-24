@@ -2,7 +2,7 @@ const swaggerOption = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "typescript-node-sequelize-boilerplate API documentation",
+      title: "Pebble score Accessment",
       version: "1.0.0",
     },
     servers: [

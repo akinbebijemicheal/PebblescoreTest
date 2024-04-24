@@ -15,6 +15,10 @@ export const loginSchema = Joi.object({
   password: Joi.string().min(8).required(),
 });
 
+export const findUsersByUsername = Joi.object({
+  username: Joi.string().required(),
+});
+
 export const updateSchema = Joi.object({
   name: Joi.string().min(3).max(30),
   username: Joi.string(),

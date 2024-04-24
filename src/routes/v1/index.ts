@@ -3,6 +3,8 @@ import { Router } from "express";
 import authRouter from "./authRoute";
 import docsRouter from "./docsRoute";
 import userRouter from "./userRoutes";
+import friendRouter from "./friendRoutes";
+import planRouter from "./planRoutes";
 
 const appRouter = Router();
 
@@ -19,6 +21,14 @@ const appRoutes = [
   {
     path: "/docs",
     router: docsRouter,
+  },
+  {
+    path: "/friend",
+    router: friendRouter,
+  },
+  {
+    path: "/plan",
+    router: planRouter,
   },
 ];
 

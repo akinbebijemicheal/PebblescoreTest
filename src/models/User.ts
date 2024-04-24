@@ -4,10 +4,12 @@ import sequelizeConnection from "../db/connection";
 
 class User extends Model {
   public id!: number;
+  public userId!: string;
   public name!: string;
+  public username!: string;
   public email!: string;
   public password!: string;
-  public mobile!: string;
+  public friends!: any;
 
   public status!: boolean;
 
@@ -25,7 +27,17 @@ User.init(
       autoIncrement: true,
       primaryKey: true,
     },
+    userId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true,
+      // primaryKey: true
+    },
     name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    username: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -36,6 +48,9 @@ User.init(
     },
     password: {
       type: DataTypes.STRING,
+    },
+    friends: { 
+      type: DataTypes.JSON 
     },
     status: {
       type: DataTypes.INTEGER,

@@ -1,12 +1,13 @@
 import { Router } from "express";
 import { requireUser, validateRequest } from "../../middleware";
-import { getUserData, updateUser } from "../../controllers/user";
-import { updateSchema } from "../../validation/user";
+import { getUserData, updateUser, findAllUsersByUsername } from "../../controllers/user";
+import { findUsersByUsername, updateSchema } from "../../validation/user";
 
 const userRouter = Router();
 
 userRouter.patch("/", requireUser, validateRequest(updateSchema), updateUser);
 userRouter.get("/", requireUser, getUserData);
+userRouter.post("/findUsersByUsername", requireUser, findAllUsersByUsername);
 
 export default userRouter;
 
@@ -50,5 +51,31 @@ export default userRouter;
  *     responses:
  *       "200":
  *         description: OK
+ * /v1/user/findUsersByUsername:
+ *   post:
+ *     summary: Find other users
+ *     tags: [User]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - username
+ *             properties:
+ *               username:
+ *                 type: string
+ *             example:
+ *               username: username
+ *     responses:
+ *       "201":
+ *         description: Created
+ *
+ *
+ *       "400":
+ *         description:  Bad Request
  *
  */

@@ -41,6 +41,7 @@
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
+    "mysql2": "^3.9.7",
     "nodemailer": "^6.6.1",
     "otplib": "^12.0.1",
     "pg": "^8.11.3",

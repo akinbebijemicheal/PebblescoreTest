@@ -80,6 +80,50 @@ export const findOneUser = async (options: any) => {
   return user;
 };
 
+export const findUsersByUsername = async (options: any) => {
+  if (!options.username) {
+    throw new Error("Please provide username");
+  }
+  const where = {
+    [Op.like]: {username: options.username},
+  };
+
+  // if (options.email) {
+  //   where[Op.or].push({ email: options.email });
+  // }
+  // if (options.id) {
+  //   where[Op.or].push({ id: options.id });
+  // }
+
+  const users = await User.findAll({
+    where,
+    attributes: { exclude: ["password"] },
+  });
+  return users;
+};
+
+export const findSingleUserByUsername = async (options: any) => {
+  if (!options.username) {
+    throw new Error("Please provide username");
+  }
+  const where = {
+    username: options.username,
+  };
+
+  // if (options.email) {
+  //   where[Op.or].push({ email: options.email });
+  // }
+  // if (options.id) {
+  //   where[Op.or].push({ id: options.id });
+  // }
+
+  const user = await User.findOne({
+    where,
+    attributes: { exclude: ["password"] },
+  });
+  return user;
+};
+
 export const updateUserById = (user: any, userId: number) => {
   if (!user && !userId) {
     throw new Error("Please provide user data and/or user id to update");
