@@ -16,7 +16,7 @@ export default inviteRouter;
 /**
  * @swagger
  * tags:
- *   name: Plan Invites
+ *   name: Invites
  *   description: Plan Invites
  */
 
@@ -25,7 +25,7 @@ export default inviteRouter;
  * /v1/invite:
  *   post:
  *     summary: Send Plan Invite
- *     tags: [Plan Invites]
+ *     tags: [Invites]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -55,10 +55,9 @@ export default inviteRouter;
  * 
  * /v1/invite/getPlanInvites:
  *   post:
- *   get:
  *     summary: Get all plans Invite
- *     description: All Plan Invites and their information.
- *     tags: [Plan Invites]
+ *     description: All Invites and their information.
+ *     tags: [Invites]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -83,11 +82,11 @@ export default inviteRouter;
  *         description:  Bad Request
 
  * 
- * /v1/friend/getInvite:
- *   get:
+ * /v1/invite/getInvite:
+ *   post:
  *     summary: Get Single Invite
  *     description: Single Invite and its information.
- *     tags: [Plan Invites]
+ *     tags: [Invites]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -116,7 +115,7 @@ export default inviteRouter;
  * /v1/invite/acceptRequest:
  *   post:
  *     summary: Accept  Plan Invite
- *     tags: [Plan Invites]
+ *     tags: [Invites]
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -148,7 +147,7 @@ export default inviteRouter;
  * /v1/invite/rejectRequest:
  *   post:
  *     summary: Reject Plan Invite
- *     tags: [Plan Invites]
+ *     tags: [Invites]
  *     security:
  *       - bearerAuth: []
  *     requestBody:

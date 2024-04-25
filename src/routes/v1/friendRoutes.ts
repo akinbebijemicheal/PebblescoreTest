@@ -16,7 +16,7 @@ export default friendRouter;
 /**
  * @swagger
  * tags:
- *   name: Friends
+ *   name: Friend
  *   description: Friends
  */
 
