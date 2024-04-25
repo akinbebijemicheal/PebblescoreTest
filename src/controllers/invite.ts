@@ -1,5 +1,8 @@
 import { findOneUser, updateUserById, findSingleUserByUsername, findUsersByUsername } from "../services/userService";
-import { createFriend, friendExists, findFriend, findFriendByUsername, removeFriend, getAllFriends } from "../services/friendRequestService";
+import { } from "../services/friendRequestService";
+import { checkIfUserIsPlanMemberBoolean, checkIfUserIsPlanOwner, getAllPlanInvites, getSinglePlanInvite, getSinglePlanInviteBoolean, inviteToPlan, updateInviteStatus } from "../services/inviteService";
+import { getPlanById, getPlanByIdBoolean } from "../services/planService";
+import { getSingleUserPlan } from "./plan";
 import { NextFunction, Response } from "express";
 import { omit } from "lodash";
 import { customRequest } from "../types/customDefinition";
@@ -8,7 +11,7 @@ const omitData = ["password"];
 
 
 
-export const addFriend = async (
+export const sendPlanInvite = async (
     req: customRequest,
     res: Response,
     next: NextFunction
@@ -16,7 +19,7 @@ export const addFriend = async (
     try {
         const { id: userId } = req.user;
 
-        let friend = req.body;
+        let invite = req.body;
 
         const user = await findOneUser({ id: userId });
 
@@ -24,30 +27,62 @@ export const addFriend = async (
             throw new ApiError(400, "User not found");
         }
 
-        if (!friend.friendId) {
-            throw new ApiError(400, "Please provide friendId");
-        } else if (!friend.friendUsername) {
-            throw new ApiError(400, "Please provide friendUsername");
 
+        if (!invite.planId) {
+            throw new ApiError(400, "Please provide planId");
         }
 
-        const friendFound = await findOneUser({ id: friend.friendId });
+        if (!invite.friendId) {
+            throw new ApiError(400, "Please provide friendId");
+        }
 
+        const planExists = await getPlanByIdBoolean(invite.planId);
+
+        if (!planExists) {
+            throw new ApiError(400, "No plan found with given planId");
+        }
+
+        let checkPlanOwner = await checkIfUserIsPlanOwner(invite.planId, userId);
+
+        if (!checkPlanOwner) {
+            throw new ApiError(400, "You are not the owner of the plan");
+        }
+
+
+        const friendFound = await findOneUser({ id: invite.friendId });
 
         if (!friendFound) {
             throw new ApiError(400, "Friend doesnt exist in database");
         }
 
-        const friendexists = await friendExists({ ownerId: userId, friendId: friend.friendId, friendUsername: friendFound.username });
-        if (friendexists) {
-            throw new ApiError(400, "Friend Already added");
+        const userfriends = JSON.parse(user.friends)['friends'];
+        const friendexists = userfriends.includes(invite.friendId)
+        if (!friendexists) {
+            throw new ApiError(400, "This person isnt your friend, please send a request or wait till he accepts friend request");
         }
 
-        friend = await createFriend(friend);
+        checkPlanOwner = await checkIfUserIsPlanOwner(invite.planId, userId);
+
+        if (checkPlanOwner) {
+            throw new ApiError(400, "You can not send a plan invite to yourself, as you are the plan owner");
+        }
+
+        const checkIfFriendIsAlreadyAPlanMember = await checkIfUserIsPlanMemberBoolean(invite.planId, invite.friendId);
+        if (checkIfFriendIsAlreadyAPlanMember) {
+            throw new ApiError(400, "Friend is already a member of the plan");
+        }
+
+        invite.senderId = userId;
+        invite.recieverId = invite.friendId;
+
+        invite = await inviteToPlan(invite);
+
+
+        //email service to both users
 
         return res.status(200).json({
-            data: friend,
-            msg: "friend created successsfully",
+            data: invite,
+            msg: "invite sent successsfully",
             error: false,
         });
     } catch (err) {
@@ -57,7 +92,7 @@ export const addFriend = async (
 };
 
 
-export const getAllUserFriends = async (
+export const getAllPlanInvite = async (
     req: customRequest,
     res: Response,
     next: NextFunction
@@ -65,26 +100,28 @@ export const getAllUserFriends = async (
     try {
         const { id: userId } = req.user;
 
+        let body = req.body;
+
+
         const user = await findOneUser({ id: userId });
 
         if (!user) {
             throw new ApiError(400, "User not found");
         }
 
-       const friends = await getAllFriends(userId);
+        const invites = await getAllPlanInvites(body.planId);
 
         return res.status(200).json({
-            data: friends,
-            msg: "total friends found",
+            data: invites,
+            msg: "total plan invites found",
             error: false,
         });
     } catch (err) {
         next(err);
     }
-
 };
 
-export const unFriendUser = async (
+export const getPlanInvite = async (
     req: customRequest,
     res: Response,
     next: NextFunction
@@ -92,7 +129,8 @@ export const unFriendUser = async (
     try {
         const { id: userId } = req.user;
 
-        let friend = req.body;
+        let body = req.body;
+
 
         const user = await findOneUser({ id: userId });
 
@@ -100,24 +138,148 @@ export const unFriendUser = async (
             throw new ApiError(400, "User not found");
         }
 
-        if (!friend.friendId) {
-            throw new ApiError(400, "Please provide friendId");
+        const invite = await getAllPlanInvites(body.inviteId);
+
+        return res.status(200).json({
+            data: invite,
+            msg: "invite found",
+            error: false,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const acceptPlanInvite = async (
+    req: customRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id: userId } = req.user;
+
+        let invite = req.body;
+
+        const user = await findOneUser({ id: userId });
+
+        if (!user) {
+            throw new ApiError(400, "User not found");
         }
 
-        const friendexists = await friendExists({ ownerId: userId, friendId: friend.friendId, friendUsername: friend.friendUsername });
-
-        if (friendexists) {
-          friend = await removeFriend({ownerId: userId, friendId: friend.friendId});
-
-            return res.status(200).json({
-                data: friend,
-                msg: "friend removed successsfully",
-                error: false,
-            });
-        }else{
-            throw new ApiError(400, "Friend not found");
-
+        if (!invite.inviteId) {
+            throw new ApiError(400, "Please provide planId");
         }
+
+        const inviteExists = await getSinglePlanInviteBoolean(invite.inviteId);
+
+        if (!inviteExists) {
+            throw new ApiError(400, "No invite found with given inviteId");
+        }
+
+        const getInvite = await getSinglePlanInvite(invite.inviteId);
+
+        const planExists = await getPlanByIdBoolean(getInvite.planId);
+
+        if (!planExists) {
+            throw new ApiError(400, "Plan doesnt exist");
+        }
+        const plan = await getPlanById(getInvite.planId);
+
+        let checkPlanOwner = await checkIfUserIsPlanOwner(getInvite.planId, userId);
+
+        if (checkPlanOwner) {
+            throw new ApiError(400, "You can not be a member of this plan, as you are the plan owner");
+        }
+
+
+        if (invite.status != 'accepted') {
+            throw new ApiError(400, "Plan Invite Response not valid for this action");
+        }
+
+
+        let req2: any = { "status": invite.status };
+        const updateInvite = await updateInviteStatus(req2, invite.inviteId);
+
+
+        let member: any = {
+            "planId": plan.id,
+            "ownerId": plan.ownerId,
+            "memberId": userId,
+        }
+
+        const planMember = await inviteToPlan(member);
+
+        return res.status(200).json({
+            data: updateInvite,
+            msg: "Invite accepted successsfully",
+            error: false,
+        });
+
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+
+export const rejectPlanInvite = async (
+    req: customRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { id: userId } = req.user;
+
+        let invite = req.body;
+
+        const user = await findOneUser({ id: userId });
+
+        if (!user) {
+            throw new ApiError(400, "User not found");
+        }
+
+        if (!invite.inviteId) {
+            throw new ApiError(400, "Please provide planId");
+        }
+
+        const inviteExists = await getSinglePlanInviteBoolean(invite.inviteId);
+
+        if (!inviteExists) {
+            throw new ApiError(400, "No invite found with given inviteId");
+        }
+
+        const getInvite = await getSinglePlanInvite(invite.inviteId);
+
+        const planExists = await getPlanByIdBoolean(getInvite.planId);
+
+        if (!planExists) {
+            throw new ApiError(400, "Plan doesnt exist");
+        }
+        const plan = await getPlanById(getInvite.planId);
+
+        let checkPlanOwner = await checkIfUserIsPlanOwner(getInvite.planId, userId);
+
+        if (checkPlanOwner) {
+            throw new ApiError(400, "You can not be a member of this plan, as you are the plan owner");
+        }
+
+
+        if (invite.status != 'rejected') {
+            throw new ApiError(400, "Plan Invite Response not valid for this action");
+        }
+
+
+        let req2: any = { "status": invite.status };
+        const updateInvite = await updateInviteStatus(req2, invite.inviteId);
+
+
+
+        return res.status(200).json({
+            data: updateInvite,
+            msg: "Invite rejected successsfully",
+            error: false,
+        });
+
     } catch (err) {
         next(err);
     }

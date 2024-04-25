@@ -77,6 +77,7 @@ export const findOneUser = async (options: any) => {
     where,
     attributes: { exclude: ["password"] },
   });
+
   return user;
 };
 

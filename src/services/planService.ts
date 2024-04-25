@@ -16,6 +16,14 @@ export const getPlanById = async (id: string) => {
   return plan;
 };
 
+export const getPlanByIdBoolean = async (id: string) => {
+  const plan = await Plan.findByPk(id);
+  if (plan) {
+   return true
+  }
+  return false;
+};
+
 export const updatePlanById = async (options: { plan: any | null; planId: string | null; userId: string | null; } = {
   plan: null,
   planId: null,

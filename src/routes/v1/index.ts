@@ -5,6 +5,7 @@ import docsRouter from "./docsRoute";
 import userRouter from "./userRoutes";
 import friendRouter from "./friendRoutes";
 import planRouter from "./planRoutes";
+import inviteRouter from "./inviteRoutes";
 
 const appRouter = Router();
 
@@ -29,6 +30,10 @@ const appRoutes = [
   {
     path: "/plan",
     router: planRouter,
+  },
+  {
+    path: "/invite",
+    router: inviteRouter,
   },
 ];
 

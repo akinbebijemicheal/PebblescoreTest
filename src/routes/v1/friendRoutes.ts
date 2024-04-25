@@ -16,8 +16,8 @@ export default friendRouter;
 /**
  * @swagger
  * tags:
- *   name: Friend
- *   description: Friend
+ *   name: Friends
+ *   description: Friends
  */
 
 /**
@@ -35,12 +35,12 @@ export default friendRouter;
  *           schema:
  *             type: object
  *             required:
- *               - reciepentId
+ *               - recipientId
  *             properties:
- *               reciepentId:
+ *               recipientId:
  *                 type: string
  *             example:
- *               reciepentId:  reciepentId
+ *               recipientId:  recipientId
  *     responses:
  *       "201":
  *         description: Created
@@ -72,12 +72,12 @@ export default friendRouter;
  *           schema:
  *             type: object
  *             required:
- *               - reciepentId
+ *               - recipientId
  *             properties:
- *               reciepentId:
+ *               recipientId:
  *                 type: string
  *             example:
- *               reciepentId:  reciepentId
+ *               recipientId:  recipientId
  *     responses:
  *       "200":
  *         description: OK

@@ -10,18 +10,18 @@ export const createFriendRequest = async (payload: any) => {
 };
 
 
-export const updateFriendRequestStatus = (friendRequest: any, reciepientId: string) => {
+export const updateFriendRequestStatus = (friendRequest: any, friendRequestId: string) => {
       return FriendRequest.update(friendRequest, {
-        where: { id: reciepientId },
+        where: { id: friendRequestId },
       });
 };
 
 
-export const checkRequestValidity = (friendRequestId: string, reciepientId: string) => {
+export const checkRequestValidity = (friendRequestId: string, recipientId: string) => {
   const requestValid =  FriendRequest.findOne({
     where: { 
       id: friendRequestId, 
-      reciepientId: reciepientId, 
+      recipientId: recipientId, 
     },
   });
 
@@ -37,15 +37,13 @@ export const getFriendById = async (id: string) => {
   return friend;
 };
 
-export const getAllFriends = async (ownerId: string) => {
+export const getAllFriendRequests = async (senderId: string) => {
   const where: any = {
-    ownerId: ownerId,
+    senderId: senderId,
   };
-  const friend = await FriendRequest.findAll({where: where});
-  if (!friend) {
-    throw new Error("User not found");
-  }
-  return friend;
+  const friendRequests = await FriendRequest.findAll({where: where});
+
+  return friendRequests;
 };
 
 export const friendRequestExists = async (
@@ -59,7 +57,7 @@ export const friendRequestExists = async (
   const where: any = {
     id: options.id,
   };
- 
+
 
   const friendRequest = await FriendRequest.findOne({ where: where });
   if (!friendRequest) {
@@ -70,27 +68,7 @@ export const friendRequestExists = async (
 };
 
 
-export const findFriend = async (options: any) => {
-  if (!options.ownerId) {
-    throw new Error("Please provide ownerId");
 
-  }
-  const where: any = {
-    ownerId: options.ownerId,
-    [Op.or]: [],
-  };
-  if (options.friendId) {
-    where[Op.or].push({ friendId: options.friendId });
-  } else if (options.friendUsername) {
-    where[Op.or].push({ friendUsername: options.friendUsername });
-  } else {
-    throw new Error("Please provide either of these options: friend Id of friend username");
-
-  }
-
-  const friend = await FriendRequest.findOne({ where: where });
-  return friend;
-};
 
 export const findFriendByUsername = async (options: any) => {
   if (!options.ownerId) {

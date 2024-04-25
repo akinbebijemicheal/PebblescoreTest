@@ -50,7 +50,8 @@ User.init(
       type: DataTypes.STRING,
     },
     friends: { 
-      type: DataTypes.JSON 
+      type: DataTypes.JSON,
+      defaultValue: {'friends': []}
     },
     status: {
       type: DataTypes.INTEGER,

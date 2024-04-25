@@ -5,7 +5,7 @@ import sequelizeConnection from "../db/connection";
 class FriendRequestRequest extends Model {
   public id!: string;
   public senderId!: string;
-  public reciepientId!: string;
+  public recipientId!: string;
   public status!: string;
 
 
@@ -28,7 +28,7 @@ FriendRequestRequest.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    reciepentId: {
+    recipientId: {
       type: DataTypes.STRING,
       allowNull: false,
     },
