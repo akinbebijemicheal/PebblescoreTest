@@ -2,19 +2,29 @@ Pebblescore Test
 
 Technical Design Document: Group Savings
 1. Technologies
+
 •	Backend: Node.js, Express.js
+
 •	Database: MySQL
+
 •	ORM: Sequelize (dialect: Mysql)
+
 •	Programming Language: TypeScript
+
 •	Authentication: JWT (JSON Web Token)
+
 • SwaggerUI for Api Documentation (OAS)
 
 
 A user can create an account
+
 A user can login
+
 A user can create a group savings plan
+
 A user can send invites to up to 5 friends to join the savings plan. The friends must
 be registered on the platform
+
 An invited friend can view and either join or decline an invitation
 
 
